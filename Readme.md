@@ -1,7 +1,7 @@
 
 # Athena 101
 
-Athena is based on PrestoDB which is a Facebook-created open source project. Athena also supports ANSI SQL and works with commonly used formats like JSON, CSV, Parquet etc. The idea behind Athena is that it is server less from an end-user perspective. Similar to Lambda, you only pay for the queries you run and the storage costs of S3.
+Athena is based on [PrestoDB](https://prestodb.io/) which is a Facebook-created open source project. Athena also supports [Hive DDL](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL), ANSI SQL and works with commonly used formats like JSON, CSV, Parquet etc. The idea behind Athena is that it is server less from an end-user perspective. Similar to Lambda, you only pay for the queries you run and the storage costs of S3.
 
 In terms of AWS ecosystem, it seems to fit in a the use case of ad-hoc querying and simplified management. Looking at other products, Redshift provides a data store for complex, multiple-joins based business intelligence workloads and EMR provides a method to run highly distributed processing frameworks such as Hadoop and Spark. Athena fits in between. It does not require cluster management but is probably not as powerful.
 
@@ -76,14 +76,16 @@ You can use the console to click through the web form to create databases and ta
  - Download the CSV sample file or clone the git repository
  
  ```
- wget https://github.com/rackerlabs/awshackday/raw/master/athena/sample_data/company_funding.csv 
+ wget https://github.com/srirajan/athena/blob/master/sample_data/company_funding.csv
  
  ```
  or
  
  ```
- git clone https://github.com/rackerlabs/awshackday
+ git clone https://github.com/srirajan/athena
  ```
+ 
+ - Login to the AWS console
  
  - Create the database
  
