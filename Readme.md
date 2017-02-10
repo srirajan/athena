@@ -324,10 +324,7 @@ As of this article, Athena only supports Console based queries and a Java SDK. T
  - [http://docs.aws.amazon.com/athena/latest/ug/what-is.html]()
 
  - [https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL]()
-
- - [https://aws.amazon.com/blogs/big-data/analyzing-data-in-s3-using-amazon-athena/]()
   
- - [https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL]()
 
 
 ============
