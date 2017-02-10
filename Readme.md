@@ -85,9 +85,12 @@ You can use the console to click through the web form to create databases and ta
  git clone https://github.com/srirajan/athena
  ```
  
- - Login to the AWS console
  
- - Create the database
+ - Load the data files on your S3 bucket. You can create a single S3 bucket and sub folders under it. You will need the S3 URL in the examples below.
+ 
+ - Now, login to the AWS console and go the Athena section. 
+ 
+ - Then in the Query editor, create the database using the following.
  
  ```
  CREATE DATABASE sampledata;
@@ -143,9 +146,77 @@ LOCATION 's3://aws-athena-data-jfj28fj3lt05kg84kkdj444/company_funding/';
   ```
 SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   ```
+ 
+ 
+ -  Now, let's load a slightly large data set. The data source covers  over 4.5 million Uber pickups in New York City from April to September 2014, and 14.3 million more Uber pickups from January to June 2015. The source of data is [https://github.com/fivethirtyeight/uber-tlc-foil-response/tree/master/uber-trip-data](). The total size of disk is about 530MB.
+ 
+ ```
+ CREATE EXTERNAL TABLE uber_trips (
+    trip_id                 INT,
+    vendor_id               VARCHAR(3),
+    pickup_datetime         TIMESTAMP,
+    dropoff_datetime        TIMESTAMP,
+    store_and_fwd_flag      VARCHAR(1),
+    rate_code_id            SMALLINT,
+    pickup_longitude        DECIMAL(18,14),
+    pickup_latitude         DECIMAL(18,14),
+    dropoff_longitude       DECIMAL(18,14),
+    dropoff_latitude        DECIMAL(18,14),
+    passenger_count         SMALLINT,
+    trip_distance           DECIMAL(6,3),
+    fare_amount             DECIMAL(6,2),
+    extra                   DECIMAL(6,2),
+    mta_tax                 DECIMAL(6,2),
+    tip_amount              DECIMAL(6,2),
+    tolls_amount            DECIMAL(6,2),
+    ehail_fee               DECIMAL(6,2),
+    improvement_surcharge   DECIMAL(6,2),
+    total_amount            DECIMAL(6,2),
+    payment_type            VARCHAR(3),
+    trip_type               SMALLINT,
+    pickup                  VARCHAR(50),
+    dropoff                 VARCHAR(50),
 
+    cab_type                VARCHAR(6),
 
- - And here's a bigger example provided by AWS that uses partitions. 
+    precipitation           SMALLINT,
+    snow_depth              SMALLINT,
+    snowfall                SMALLINT,
+    max_temperature         SMALLINT,
+    min_temperature         SMALLINT,
+    average_wind_speed      SMALLINT,
+
+    pickup_nyct2010_gid     SMALLINT,
+    pickup_ctlabel          VARCHAR(10),
+    pickup_borocode         SMALLINT,
+    pickup_boroname         VARCHAR(13),
+    pickup_ct2010           VARCHAR(6),
+    pickup_boroct2010       VARCHAR(7),
+    pickup_cdeligibil       VARCHAR(1),
+    pickup_ntacode          VARCHAR(4),
+    pickup_ntaname          VARCHAR(56),
+    pickup_puma             VARCHAR(4),
+
+    dropoff_nyct2010_gid    SMALLINT,
+    dropoff_ctlabel         VARCHAR(10),
+    dropoff_borocode        SMALLINT,
+    dropoff_boroname        VARCHAR(13),
+    dropoff_ct2010          VARCHAR(6),
+    dropoff_boroct2010      VARCHAR(7),
+    dropoff_cdeligibil      VARCHAR(1),
+    dropoff_ntacode         VARCHAR(4),
+    dropoff_ntaname         VARCHAR(56),
+    dropoff_puma            VARCHAR(4)
+) ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+  LOCATION 's3://aws-athena-data-jfj28fj3lt05kg84kkdj444/uber/';
+  ```
+  
+   - Run a group by query. In my experiences, this finished in under 5 seconds.  
+  ```
+  SELECT cab_type, count(*) FROM uber_trips GROUP BY cab_type;
+  ```
+  
+   - Note, this could be further optimised by partitioning the data and using a columnar storage. This would optimise both the cost of running queries and the query time as well. Here's a bigger example provided by AWS that uses partitions. 
   
   ```
   CREATE EXTERNAL TABLE sampledata.flight_delays_csv (
@@ -291,6 +362,7 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   LIMIT 10;
  ```
 
+
 ## JDBC
 
 As of this article, Athena only supports Console based queries and a Java SDK. There is no direct API integration either. Here's an example using Java
@@ -324,6 +396,8 @@ As of this article, Athena only supports Console based queries and a Java SDK. T
  - [http://docs.aws.amazon.com/athena/latest/ug/what-is.html]()
 
  - [https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL]()
+ 
+ - http://tech.marksblogg.com/billion-nyc-taxi-rides-aws-athena.html
   
 
 
