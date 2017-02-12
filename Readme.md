@@ -30,7 +30,7 @@ In terms of AWS ecosystem, it seems to fit in a the use case of ad-hoc querying 
  
  - There is no data loading or transformation required. You can delete table definitions and schema without impacting the underlying data stored on Amazon S3. 
  
- - Not all Presto functions are supported. See [https://prestodb.io/docs/current/functions.html]()
+ - Not all Presto functions are supported. 
  
  - When you create, update, or delete tables, those operations are guaranteed ACID-compliant. For example, if multiple users or clients attempt to create or alter an existing table at the same time, only one will be successful.
  
@@ -49,10 +49,10 @@ In terms of AWS ecosystem, it seems to fit in a the use case of ad-hoc querying 
  
  -  As with most things, you can mix and match AWS services based on your workloads. One possibility is to use an on-demand EMR cluster to process data and dump results to S3. Then use Athena to create adhoc tables and run reports. 
  
+ - “Facebook uses Presto for interactive queries against several internal data stores, including their 300PB data warehouse. Over 1,000 Facebook employees use Presto daily to run more than 30,000 queries that in total scan over a petabyte each per day” Source : [https://prestodb.io/]()
 
 
 ## Limitations
-
  
  - There is no support for transactions. This includes any transactions found in Hive or Presto.
   
@@ -84,7 +84,6 @@ You can use the console to click through the web form to create databases and ta
  ```
  git clone https://github.com/srirajan/athena
  ```
- 
  
  - Load the data files on your S3 bucket. You can create a single S3 bucket and sub folders under it. You will need the S3 URL in the examples below.
  
@@ -147,10 +146,8 @@ LOCATION 's3://aws-athena-data-jfj28fj3lt05kg84kkdj444/company_funding/';
 SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   ```
  
- 
  -  Now, let's load a larger data set. The data source covers  over a billion Taxi trips  in New York City from 2014 and 2015. The source of data is [https://github.com/fivethirtyeight/uber-tlc-foil-response/tree/master/uber-trip-data](). The total size on disk is about 190GB. Note, Athena will report larger sizes because of how it manages the tables on top of S3. 
    
-  
   ```
   CREATE EXTERNAL TABLE sampledata.taxi (
   vendor_name VARCHAR(3),
@@ -184,8 +181,7 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   ```
   SELECT sum(Tip_Amt)/sum(Total_Amt) as Tip_PCT FROM sampledata.taxi;
   ```
-  
-   - Note, this could be further optimised by partitioning the data and using a columnar storage. This would optimise both the cost of running queries and the query time as well. Formats like ORC and Parquet are better suited for this as well. Here's another example provided by AWS that uses partitions. 
+ - Note, this could be further optimised by partitioning the data and using a columnar storage. This would optimise both the cost of running queries and the query time as well. Formats like ORC and Parquet are better suited for this as well. Here's another example provided by AWS that uses partitions. 
   
   ```
   CREATE EXTERNAL TABLE sampledata.flight_delays_csv (
@@ -305,8 +301,7 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
       ESCAPED BY '\\'
       LINES TERMINATED BY '\n'
     LOCATION 's3://athena-examples/flight/csv/';
-    
-   ```
+    ```
  
  - Repair the table to add the partitions to the metadata
  
@@ -314,22 +309,22 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   MSCK REPAIR TABLE sampledata.flight_delays_csv;
   ```
   
-  - List partitions
+ - List partitions
   
   ```
   SHOW PARTITIONS sampledata.flight_delays_csv;
   ```
   
- -  Query for Top 10 routes delayed by more than 1 hour. This query might take up to 60 seconds to run. Note queries in the console can run in the background and so you try other things. 
+  -  Query for Top 10 routes delayed by more than 1 hour. This query might take up to 60 seconds to run. Note queries in the console can run in the background and so you try other things. 
  
- ```
- SELECT origin, dest, count(*) as delays
+  ```
+  SELECT origin, dest, count(*) as delays
   FROM sampledata.flight_delays_csv
   WHERE depdelayminutes > 60
   GROUP BY origin, dest
   ORDER BY 3 DESC
   LIMIT 10;
- ```
+  ```
 
 
 ## JDBC
@@ -353,7 +348,7 @@ As of this article, Athena only supports Console based queries and a Java SDK. T
  
  ```
  
-  - Execute the class and it should list all tables in the database specified
+ - Execute the class and it should list all tables in the database specified
   
   ```
   java -cp  ".:AthenaJDBC41-1.0.0.jar:aws-java-sdk-1.11.77.jar"  AthenaJDBCTest01
@@ -368,7 +363,4 @@ As of this article, Athena only supports Console based queries and a Java SDK. T
  
  - http://tech.marksblogg.com/billion-nyc-taxi-rides-aws-athena.html
   
-
-
 ============
-
