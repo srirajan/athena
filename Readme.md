@@ -148,75 +148,44 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   ```
  
  
- -  Now, let's load a slightly large data set. The data source covers  over 4.5 million Uber pickups in New York City from April to September 2014, and 14.3 million more Uber pickups from January to June 2015. The source of data is [https://github.com/fivethirtyeight/uber-tlc-foil-response/tree/master/uber-trip-data](). The total size of disk is about 530MB.
- 
- ```
- CREATE EXTERNAL TABLE uber_trips (
-    trip_id                 INT,
-    vendor_id               VARCHAR(3),
-    pickup_datetime         TIMESTAMP,
-    dropoff_datetime        TIMESTAMP,
-    store_and_fwd_flag      VARCHAR(1),
-    rate_code_id            SMALLINT,
-    pickup_longitude        DECIMAL(18,14),
-    pickup_latitude         DECIMAL(18,14),
-    dropoff_longitude       DECIMAL(18,14),
-    dropoff_latitude        DECIMAL(18,14),
-    passenger_count         SMALLINT,
-    trip_distance           DECIMAL(6,3),
-    fare_amount             DECIMAL(6,2),
-    extra                   DECIMAL(6,2),
-    mta_tax                 DECIMAL(6,2),
-    tip_amount              DECIMAL(6,2),
-    tolls_amount            DECIMAL(6,2),
-    ehail_fee               DECIMAL(6,2),
-    improvement_surcharge   DECIMAL(6,2),
-    total_amount            DECIMAL(6,2),
-    payment_type            VARCHAR(3),
-    trip_type               SMALLINT,
-    pickup                  VARCHAR(50),
-    dropoff                 VARCHAR(50),
-
-    cab_type                VARCHAR(6),
-
-    precipitation           SMALLINT,
-    snow_depth              SMALLINT,
-    snowfall                SMALLINT,
-    max_temperature         SMALLINT,
-    min_temperature         SMALLINT,
-    average_wind_speed      SMALLINT,
-
-    pickup_nyct2010_gid     SMALLINT,
-    pickup_ctlabel          VARCHAR(10),
-    pickup_borocode         SMALLINT,
-    pickup_boroname         VARCHAR(13),
-    pickup_ct2010           VARCHAR(6),
-    pickup_boroct2010       VARCHAR(7),
-    pickup_cdeligibil       VARCHAR(1),
-    pickup_ntacode          VARCHAR(4),
-    pickup_ntaname          VARCHAR(56),
-    pickup_puma             VARCHAR(4),
-
-    dropoff_nyct2010_gid    SMALLINT,
-    dropoff_ctlabel         VARCHAR(10),
-    dropoff_borocode        SMALLINT,
-    dropoff_boroname        VARCHAR(13),
-    dropoff_ct2010          VARCHAR(6),
-    dropoff_boroct2010      VARCHAR(7),
-    dropoff_cdeligibil      VARCHAR(1),
-    dropoff_ntacode         VARCHAR(4),
-    dropoff_ntaname         VARCHAR(56),
-    dropoff_puma            VARCHAR(4)
-) ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-  LOCATION 's3://aws-athena-data-jfj28fj3lt05kg84kkdj444/uber/';
+ -  Now, let's load a larger data set. The data source covers  over a billion Taxi trips  in New York City from 2014 and 2015. The source of data is [https://github.com/fivethirtyeight/uber-tlc-foil-response/tree/master/uber-trip-data](). The total size on disk is about 190GB. Note, Athena will report larger sizes because of how it manages the tables on top of S3. 
+   
+  
+  ```
+  CREATE EXTERNAL TABLE sampledata.taxi (
+  vendor_name VARCHAR(3),
+  Trip_Pickup_DateTime TIMESTAMP,
+  Trip_Dropoff_DateTime TIMESTAMP,
+  Passenger_Count INT,
+  Trip_Distance FLOAT,
+  Start_Lon FLOAT,
+  Start_Lat FLOAT,
+  Rate_Code INT,
+  store_and_forward VARCHAR(3),
+  End_Lon FLOAT,
+  End_Lat FLOAT,
+  Payment_Type VARCHAR(32),
+  Fare_Amt FLOAT,
+  surcharge FLOAT,
+  mta_tax FLOAT,
+  Tip_Amt FLOAT,
+  Tolls_Amt FLOAT,
+  Total_Amt FLOAT
+  ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+  LOCATION 's3://aws-athena-data-jfj28fj3lt05kg84kkdj444/taxi/';
   ```
   
-   - Run a group by query. In my experiences, this finished in under 5 seconds.  
+ - Let's run a query that scans a large amount of this data.  In my experiences, the following queries finish in under 40 seconds and scans about 200G of data
+    
   ```
-  SELECT cab_type, count(*) FROM uber_trips GROUP BY cab_type;
+  SELECT vendor_name, sum(Total_Amt) as Total FROM sampledata.taxi GROUP BY vendor_name;
+  ```
+
+  ```
+  SELECT sum(Tip_Amt)/sum(Total_Amt) as Tip_PCT FROM sampledata.taxi;
   ```
   
-   - Note, this could be further optimised by partitioning the data and using a columnar storage. This would optimise both the cost of running queries and the query time as well. Here's a bigger example provided by AWS that uses partitions. 
+   - Note, this could be further optimised by partitioning the data and using a columnar storage. This would optimise both the cost of running queries and the query time as well. Formats like ORC and Parquet are better suited for this as well. Here's another example provided by AWS that uses partitions. 
   
   ```
   CREATE EXTERNAL TABLE sampledata.flight_delays_csv (
