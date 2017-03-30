@@ -142,13 +142,13 @@ LOCATION 's3://aws-athena-data-jfj28fj3lt05kg84kkdj444/company_funding/';
     
 - Run a query to find top 5 funded companies
 
-  ```
+```
 SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
-  ```
+```
  
  -  Now, let's load a larger data set. The data source covers  over a billion Taxi trips  in New York City from 2014 and 2015. The source of data is [https://github.com/fivethirtyeight/uber-tlc-foil-response/tree/master/uber-trip-data](). The total size on disk is about 190GB. Note, Athena will report larger sizes because of how it manages the tables on top of S3. 
    
-  ```
+```
   CREATE EXTERNAL TABLE sampledata.taxi (
   vendor_name VARCHAR(3),
   Trip_Pickup_DateTime TIMESTAMP,
@@ -170,7 +170,7 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   Total_Amt FLOAT
   ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
   LOCATION 's3://aws-athena-data-jfj28fj3lt05kg84kkdj444/taxi/';
-  ```
+```
   
  - Let's run a query that scans a large amount of this data.  In my experiences, the following queries finish in under 40 seconds and scans about 200G of data
     
@@ -184,7 +184,7 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   
  - Note, this could be further optimised by partitioning the data and using a columnar storage. This would optimise both the cost of running queries and the query time as well. Formats like ORC and Parquet are better suited for this as well. Here's another example provided by AWS that uses partitions. 
  
-  
+      
   ```
   CREATE EXTERNAL TABLE sampledata.flight_delays_csv (
     yr INT,
