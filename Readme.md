@@ -307,26 +307,26 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
  
  - Repair the table to add the partitions to the metadata
  
-  ```
-  MSCK REPAIR TABLE sampledata.flight_delays_csv;
-  ```
+```
+MSCK REPAIR TABLE sampledata.flight_delays_csv;
+```
   
  - List partitions
   
-  ```
-  SHOW PARTITIONS sampledata.flight_delays_csv;
-  ```
+```
+SHOW PARTITIONS sampledata.flight_delays_csv;
+```
   
   -  Query for Top 10 routes delayed by more than 1 hour. This query might take up to 60 seconds to run. Note queries in the console can run in the background and so you try other things. 
  
-  ```
+```
   SELECT origin, dest, count(*) as delays
   FROM sampledata.flight_delays_csv
   WHERE depdelayminutes > 60
   GROUP BY origin, dest
   ORDER BY 3 DESC
   LIMIT 10;
-  ```
+```
 
 
 ## JDBC
