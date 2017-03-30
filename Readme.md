@@ -181,7 +181,9 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   ```
   SELECT sum(Tip_Amt)/sum(Total_Amt) as Tip_PCT FROM sampledata.taxi;
   ```
+  
  - Note, this could be further optimised by partitioning the data and using a columnar storage. This would optimise both the cost of running queries and the query time as well. Formats like ORC and Parquet are better suited for this as well. Here's another example provided by AWS that uses partitions. 
+ 
   
   ```
   CREATE EXTERNAL TABLE sampledata.flight_delays_csv (
