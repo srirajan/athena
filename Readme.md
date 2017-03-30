@@ -174,18 +174,18 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
   
  - Let's run a query that scans a large amount of this data.  In my experiences, the following queries finish in under 40 seconds and scans about 200G of data
     
-  ```
-  SELECT vendor_name, sum(Total_Amt) as Total FROM sampledata.taxi GROUP BY vendor_name;
-  ```
+```
+SELECT vendor_name, sum(Total_Amt) as Total FROM sampledata.taxi GROUP BY vendor_name;
+```
 
-  ```
-  SELECT sum(Tip_Amt)/sum(Total_Amt) as Tip_PCT FROM sampledata.taxi;
-  ```
+```
+SELECT sum(Tip_Amt)/sum(Total_Amt) as Tip_PCT FROM sampledata.taxi;
+```
   
  - Note, this could be further optimised by partitioning the data and using a columnar storage. This would optimise both the cost of running queries and the query time as well. Formats like ORC and Parquet are better suited for this as well. Here's another example provided by AWS that uses partitions. 
  
       
-  ```
+```
   CREATE EXTERNAL TABLE sampledata.flight_delays_csv (
     yr INT,
     quarter INT,
@@ -303,9 +303,9 @@ SELECT * from sampledata.companyfundingsmall ORDER BY raisedAmt DESC LIMIT 5;
       ESCAPED BY '\\'
       LINES TERMINATED BY '\n'
     LOCATION 's3://athena-examples/flight/csv/';
-    ```
+```
  
- - Repair the table to add the partitions to the metadata
+- Repair the table to add the partitions to the metadata
  
 ```
 MSCK REPAIR TABLE sampledata.flight_delays_csv;
